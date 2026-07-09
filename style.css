@@ -582,3 +582,10 @@ input, textarea {
 .note-card {
   transition: background-color 0.2s;
 }
+
+.logo img,
+.brand img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
