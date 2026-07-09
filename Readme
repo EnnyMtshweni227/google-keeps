@@ -1,0 +1,89 @@
+# Scratch — Quick Notes
+
+A small, dependency-free notes app inspired by the "sticky note" style of
+apps like Google Keep, restyled with its own visual identity: a warm
+stationery palette, serif display type, and a few extra features
+(note colours, pinning, undo-able delete) not found in a bare clone.
+
+Built with plain **HTML, CSS, and JavaScript** — no frameworks, no build
+step, no external JS libraries.
+
+## Features
+
+- **Create notes** from the inline composer at the top of the page (title
+  is optional).
+- **Edit** any note by clicking its card, which opens a modal with the
+  full text.
+- **Colour** notes using the swatch picker in the composer or the edit
+  modal.
+- **Pin** important notes so they float to the top of the grid.
+- **Archive / Unarchive** notes to tuck them out of the main view without
+  deleting them.
+- **Delete** moves a note to **Trash** (soft delete, reversible via the
+  "Undo" toast).
+- **Restore** a note from Trash, or **delete forever** (also reversible
+  for a few seconds via "Undo", and Trash can be emptied in bulk).
+- **Search** filters notes by title or body across the current view.
+- **Grid / list view** toggle, and a collapsible sidebar for small
+  screens.
+- Notes are saved to the browser's `localStorage`, so they persist
+  between visits on the same device/browser.
+
+## Project structure
+
+```
+keep-clone/
+├── index.html      # Page structure & markup (semantic HTML5)
+├── styles.css       # All styling, layout, and responsive rules
+├── script.js         # Application logic (state, rendering, events)
+├── assets/
+│   └── favicon.svg   # Tab icon
+└── README.md
+```
+
+All icons are inline SVG — there are no external image files to manage
+or go missing, and every icon inherits its colour from CSS.
+
+## Running the project
+
+No build tools or installation are required.
+
+**Option 1 — just open it**
+Double-click `index.html` (or right-click → Open with your browser).
+
+**Option 2 — local server (recommended)**
+Some browsers restrict certain features (like `localStorage`) when a
+page is opened directly from the filesystem. A tiny local server avoids
+that:
+
+```bash
+# from inside the keep-clone folder
+python3 -m http.server 8000
+# then visit http://localhost:8000 in your browser
+```
+
+or, with Node installed:
+
+```bash
+npx serve .
+```
+
+## Deploying
+
+The app is fully static, so it can be deployed as-is to any static host:
+
+- **GitHub Pages**: push this folder to a repo and enable Pages on the
+  `main` branch.
+- **Netlify / Vercel**: drag-and-drop the `keep-clone` folder, or connect
+  the repo — no build command is needed.
+
+## Notes on the code
+
+- `script.js` is organised into clearly commented sections: persistence,
+  helpers, the composer, the edit modal, note actions (archive / delete /
+  restore / pin), rendering, and event wiring.
+- All user-entered text is HTML-escaped before being rendered, to avoid
+  markup injection through note titles or bodies.
+- The colour system and typography are defined as CSS custom properties
+  at the top of `styles.css`, so the whole palette can be changed from
+  one place.
