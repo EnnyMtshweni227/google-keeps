@@ -1,0 +1,752 @@
+/* =========================================================
+   Scratch — Quick Notes
+   Design tokens
+   ========================================================= */
+:root {
+  /* Palette — warm stationery, not Keep's yellow/white */
+  --bg: #f2efe9;
+  --surface: #fffdf8;
+  --surface-alt: #ece6d9;
+  --line: #ddd5c4;
+
+  --ink: #2e2a26;
+  --ink-soft: #6b655c;
+  --ink-faint: #a49c8d;
+
+  --pine: #3f6e5b;       /* primary accent */
+  --pine-dark: #2e5546;
+  --sienna: #c9673f;     /* secondary / CTA */
+  --sienna-dark: #a6512f;
+  --plum: #7a5c8e;
+  --danger: #b3452c;
+
+  /* Note colour swatches */
+  --swatch-default: var(--surface);
+  --swatch-sage: #dce6d6;
+  --swatch-sand: #f0e2c8;
+  --swatch-blush: #f4d9d2;
+  --swatch-sky: #d6e4ec;
+  --swatch-lilac: #e5dcee;
+  --swatch-coral: #f6c9b8;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-card: 0 1px 2px rgba(46, 42, 38, 0.08), 0 1px 1px rgba(46, 42, 38, 0.06);
+  --shadow-card-hover: 0 6px 16px rgba(46, 42, 38, 0.14);
+  --shadow-modal: 0 20px 50px rgba(30, 26, 20, 0.28);
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+
+  --sidebar-w: 232px;
+  --sidebar-w-collapsed: 76px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--pine);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  z-index: 999;
+  border-radius: 0 0 var(--radius-sm) 0;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--sienna);
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   Layout shell
+   ========================================================= */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--surface-alt);
+  border-right: 1px solid var(--line);
+  padding: 0.75rem 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+}
+
+.sidebar.is-collapsed {
+  width: var(--sidebar-w-collapsed);
+}
+
+.sidebar.is-collapsed .nav-item span,
+.sidebar.is-collapsed .sidebar-footnote {
+  display: none;
+}
+
+.menu-toggle {
+  margin: 0.25rem 0.25rem 1rem;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  position: relative;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+.icon-btn:hover {
+  background: rgba(46, 42, 38, 0.08);
+  color: var(--ink);
+}
+.icon-btn[aria-pressed="true"] {
+  color: var(--sienna);
+}
+
+/* tooltip */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 5px 9px;
+  border-radius: 5px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 40;
+}
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  border: none;
+  background: transparent;
+  padding: 0.65rem 0.9rem;
+  border-radius: 0 999px 999px 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+}
+.nav-item svg {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+}
+.nav-item:hover {
+  background: rgba(63, 110, 91, 0.1);
+  color: var(--ink);
+}
+.nav-item.is-active {
+  background: rgba(63, 110, 91, 0.16);
+  color: var(--pine-dark);
+  font-weight: 600;
+}
+
+.sidebar-footnote {
+  margin-top: auto;
+  font-size: 12px;
+  color: var(--ink-faint);
+  padding: 0.9rem;
+}
+
+/* ---------- Main column ---------- */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.9rem 1.5rem;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 20;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.brand-mark {
+  width: 26px;
+  height: 26px;
+  color: var(--pine);
+}
+.brand h1 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.search-wrapper {
+  flex: 1;
+  max-width: 620px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.9rem;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.search-wrapper:focus-within {
+  border-color: var(--pine);
+  box-shadow: 0 0 0 3px rgba(63, 110, 91, 0.15);
+}
+.search-icon {
+  width: 17px;
+  height: 17px;
+  color: var(--ink-faint);
+  flex-shrink: 0;
+}
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
+.search-input::placeholder {
+  color: var(--ink-faint);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--pine);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* =========================================================
+   Workspace
+   ========================================================= */
+.notes-workspace {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1180px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ---------- Composer ---------- */
+.composer-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2.25rem;
+}
+
+.composer {
+  width: 100%;
+  max-width: 620px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 0.85rem 1.1rem;
+  transition: box-shadow 0.2s ease;
+}
+.composer:focus-within,
+.composer[data-expanded="true"] {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.composer-title {
+  display: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  margin-bottom: 0.4rem;
+}
+.composer[data-expanded="true"] .composer-title {
+  display: block;
+}
+
+.composer-text {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  resize: none;
+  font-size: 14.5px;
+  min-height: 24px;
+  font-family: var(--font-body);
+}
+
+.composer-footer {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line);
+}
+.composer[data-expanded="true"] .composer-footer {
+  display: flex;
+}
+
+.composer-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* swatches */
+.swatch-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(46, 42, 38, 0.18);
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+}
+.swatch[aria-checked="true"]::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 2px solid var(--pine);
+  border-radius: 50%;
+}
+
+.btn-text,
+.btn-solid {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.9rem;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.btn-text {
+  background: transparent;
+  color: var(--ink-soft);
+}
+.btn-text:hover {
+  background: rgba(46, 42, 38, 0.08);
+  color: var(--ink);
+}
+.btn-solid {
+  background: var(--pine);
+  color: #fff;
+}
+.btn-solid:hover {
+  background: var(--pine-dark);
+}
+
+/* ---------- Bin toolbar ---------- */
+.bin-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.bin-tools.hidden {
+  display: none;
+}
+.bin-tools .btn-text {
+  color: var(--danger);
+  flex-shrink: 0;
+}
+.bin-tools .btn-text:hover {
+  background: rgba(179, 69, 44, 0.1);
+}
+
+/* ---------- Empty state ---------- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--ink-faint);
+  padding: 3.5rem 1rem;
+  text-align: center;
+}
+.empty-state.hidden {
+  display: none;
+}
+.empty-illustration {
+  width: 100px;
+  height: 80px;
+}
+
+/* ---------- Notes grid ---------- */
+.notes-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.notes-grid.list-view {
+  grid-template-columns: 1fr;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.note-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  break-inside: avoid;
+}
+.note-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 5px;
+  background: var(--card-accent, var(--pine));
+}
+.note-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+.note-card.is-pinned {
+  transform: rotate(-0.6deg);
+}
+.note-card.is-pinned:hover {
+  transform: rotate(-0.6deg) translateY(-2px);
+}
+
+.note-body {
+  padding: 0.95rem 1rem 0.6rem 1.15rem;
+}
+
+.note-pin-flag {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 16px;
+  height: 16px;
+  color: var(--sienna);
+}
+.note-pin-flag svg {
+  width: 100%;
+  height: 100%;
+}
+
+.note-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 1.6rem 0.35rem 0;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.note-text {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 220px;
+  overflow: hidden;
+}
+
+.note-meta {
+  font-size: 11px;
+  color: var(--ink-faint);
+  padding: 0 1rem 0.5rem 1.15rem;
+}
+
+.note-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0.3rem 0.5rem 0.5rem 0.75rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.note-card:hover .note-actions,
+.note-card:focus-within .note-actions {
+  opacity: 1;
+}
+.note-actions .icon-btn {
+  width: 34px;
+  height: 34px;
+}
+.note-actions .icon-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* =========================================================
+   Modal
+   ========================================================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 26, 20, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 100;
+}
+.modal-backdrop.hidden {
+  display: none;
+}
+
+.modal-card {
+  background: var(--modal-accent, var(--surface));
+  width: 100%;
+  max-width: 560px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  padding: 1.25rem 1.4rem 0.9rem;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#editForm {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#editTitle {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+#editText {
+  border: none;
+  outline: none;
+  background: transparent;
+  resize: vertical;
+  font-size: 14.5px;
+  min-height: 140px;
+  flex: 1;
+  font-family: var(--font-body);
+}
+
+.modal-footer {
+  border-top: 1px solid rgba(46, 42, 38, 0.12);
+  margin-top: 0.75rem;
+  padding-top: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.modal-timestamp {
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  flex: 1;
+}
+
+.modal-actions-right {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* =========================================================
+   Toast
+   ========================================================= */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--surface);
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 13.5px;
+  box-shadow: var(--shadow-modal);
+  z-index: 200;
+}
+.toast.hidden {
+  display: none;
+}
+.toast-action {
+  background: transparent;
+  border: none;
+  color: var(--sienna);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 0;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 860px) {
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+    width: var(--sidebar-w-collapsed);
+  }
+  .sidebar .nav-item span,
+  .sidebar-footnote {
+    display: none;
+  }
+  .main-content {
+    margin-left: var(--sidebar-w-collapsed);
+  }
+  .app-header {
+    flex-wrap: wrap;
+  }
+  .brand h1 {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .notes-workspace {
+    padding: 1rem;
+  }
+  .notes-grid {
+    grid-template-columns: 1fr;
+  }
+  .search-wrapper {
+    order: 3;
+    max-width: none;
+    width: 100%;
+  }
+}
